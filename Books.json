@@ -1,0 +1,23 @@
+[
+  {
+    "title": "An Introduction to Statistical Learning",
+    "authors": "Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani",
+    "publication_year": 2021,
+    "publisher": "Springer",
+    "genre": "Statistical Learning"
+  },
+  {
+    "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
+    "authors": "Aurélien Géron",
+    "publication_year": 2022,
+    "publisher": "O'Reilly Media",
+    "genre": "Machine Learning"
+  },
+  {
+    "title": "Python for Data Analysis",
+    "authors": "Wes McKinney",
+    "publication_year": 2022,
+    "publisher": "O'Reilly Media",
+    "genre": "Data Analysis"
+  }
+]
