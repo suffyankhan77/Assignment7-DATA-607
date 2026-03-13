@@ -1,0 +1,248 @@
+---
+title: "Assignment 7 – Working with HTML and JSON: Codebase"
+author: "Muhammad Suffyan Khan"
+date: "2026-03-13"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This assignment focuses on working with two common semi-structured data formats: HTML and JSON. The goal is to better understand how the same dataset can be represented in different file structures and then imported into R for downstream analysis.
+
+For this exercise, I will manually create two files containing the same book dataset: an HTML file containing a table and a JSON file representing the same information as structured objects. I will then write R code to load both files into R data frames and compare them to determine whether they are identical.
+
+------------------------------------------------------------------------
+
+## Selected Dataset
+
+For this assignment I selected **three books related to data science and machine learning**, which aligns with the subject of this course.
+
+The books included in the dataset are:
+
+-   *An Introduction to Statistical Learning* – Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani\
+-   *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow* – Aurélien Géron\
+-   *Python for Data Analysis* – Wes McKinney
+
+These books allow the dataset to include **multiple authors for at least one book**, which satisfies the assignment requirement.
+
+Each book record will contain the following attributes:
+
+-   Title\
+-   Authors\
+-   Publication Year\
+-   Publisher\
+-   Genre
+
+------------------------------------------------------------------------
+
+## Planned Approach
+
+### 1. Manually Create the HTML File
+
+I will create a file named `books.html` by hand. This file will contain an HTML table representing the book dataset.
+
+The table will include:
+
+-   A header row listing the attributes\
+-   One row for each book\
+-   Columns for title, authors, publication year, publisher, and genre
+
+This step will help reinforce how tabular data is structured in HTML.
+
+------------------------------------------------------------------------
+
+### 2. Manually Create the JSON File
+
+Next, I will create a file named `books.json` manually. This file will represent the same book dataset in JSON format.
+
+The JSON structure will consist of:
+
+-   An array containing book objects\
+-   One object per book\
+-   Fields matching the attributes used in the HTML table
+
+This demonstrates how the same dataset can be represented in a hierarchical structure.
+
+------------------------------------------------------------------------
+
+### 3. Upload Files to GitHub
+
+Both files (`books.html` and `books.json`) will be uploaded to a **public GitHub repository**. This allows the files to be accessed directly from the web.
+
+Using GitHub raw file links ensures that the R code can load the files without relying on local file paths.
+
+------------------------------------------------------------------------
+
+### 4. Load the HTML Data into R
+
+Using the `rvest` package, I will read the HTML table from the GitHub raw URL and convert it into an R data frame.
+
+During this step I will verify:
+
+-   The table structure
+-   Column names
+-   Data types
+
+------------------------------------------------------------------------
+
+### 5. Load the JSON Data into R
+
+Using the `jsonlite` package, I will read the JSON file from the GitHub raw URL and convert it into a second R data frame.
+
+I will check that the imported data matches the structure and values from the HTML table.
+
+------------------------------------------------------------------------
+
+### 6. Compare the Two Data Frames
+
+After both datasets are loaded, I will compare them using:
+
+-   `identical()` to test strict equality
+-   `all.equal()` to detect minor structural differences if present
+
+This step will confirm whether both file formats produce identical data frames when imported into R.
+
+------------------------------------------------------------------------
+
+## R Packages to Be Used
+
+The following packages will be used:
+
+-   `rvest` – to read HTML tables\
+-   `jsonlite` – to read JSON data\
+-   `dplyr` – for light data manipulation and comparison
+
+------------------------------------------------------------------------
+
+## Reproducibility
+
+To ensure the analysis is reproducible:
+
+-   The HTML and JSON files will be manually created\
+-   Both files will be stored in a public GitHub repository\
+-   The Quarto document will load the files directly from GitHub raw URLs
+
+------------------------------------------------------------------------
+
+## Codebase
+
+```{r,message: false, warning: false}
+library(rvest)
+library(jsonlite)
+library(tidyverse)
+library(knitr)
+```
+
+## Load the HTML file
+
+This assignment uses a manually created HTML table containing information on three books related to data science and machine learning.
+
+The HTML file is stored in the GitHub repository and loaded directly using the raw file link for reproducibility.
+
+```{r}
+html_url <- "https://raw.githubusercontent.com/suffyankhan77/Assignment7-DATA-607/main/Books.html"
+
+books_html <- html_url %>%
+  read_html() %>%
+  html_table(fill = TRUE)
+
+books_html <- books_html[[1]]
+
+books_html
+```
+
+The output above shows the book data imported from the HTML table into an R data frame.
+
+## Load the JSON file
+
+The same dataset was also manually created in JSON format. This file contains the same three book records and attributes as the HTML version.
+
+The JSON file is also loaded directly from the GitHub repository using its raw file link.
+
+```{r}
+json_url <- "https://raw.githubusercontent.com/suffyankhan77/Assignment7-DATA-607/main/Books.json"
+
+books_json <- fromJSON(json_url)
+
+books_json
+```
+
+The output above shows the same dataset imported from the JSON file into a separate R data frame.
+
+## Inspect structure of both data frames
+
+Before comparing the two datasets, I inspect their structure to verify the variable names and data types.
+
+```{r}
+glimpse(books_html)
+glimpse(books_json)
+```
+
+This step helps confirm whether both imported datasets have the same variables and whether any columns require type conversion before comparison.
+
+## Standardize data types
+
+Because HTML and JSON imports can sometimes differ slightly in structure, I standardize both data frames by converting all columns to character type, matching column names and order, and resetting row names.
+
+```{r}
+books_html <- books_html %>%
+  mutate(across(everything(), as.character)) %>%
+  as.data.frame(stringsAsFactors = FALSE)
+
+books_json <- books_json %>%
+  mutate(across(everything(), as.character)) %>%
+  as.data.frame(stringsAsFactors = FALSE)
+
+names(books_html) <- trimws(names(books_html))
+names(books_json) <- trimws(names(books_json))
+
+books_html <- books_html[, names(books_json), drop = FALSE]
+
+row.names(books_html) <- NULL
+row.names(books_json) <- NULL
+```
+
+After this step, both data frames are aligned for a strict comparison.
+
+## Compare the two data frames using identical()
+
+The `identical()` function checks whether the two data frames are exactly the same in both values and structure.
+
+```{r}
+identical_result <- identical(books_html, books_json)
+
+identical_result
+```
+
+If the result is `TRUE`, then both the HTML and JSON files produce exactly the same data frame in R.
+
+## Compare the two data frames using all.equal()
+
+To provide an additional check, I also use `all.equal()`, which is slightly more flexible and can help identify minor structural differences if they exist.
+
+```{r}
+all_equal_result <- all.equal(books_html, books_json)
+
+all_equal_result
+
+```
+
+If this result returns `TRUE`, it confirms that the two imported datasets are equivalent.
+
+## Display final combined comparison view
+
+To make the comparison more transparent, I print both data frames again after type alignment.
+
+```{r}
+kable(books_html, caption = "Book Data Imported from HTML")
+kable(books_json, caption = "Book Data Imported from JSON")
+```
+
+These tables show that both source files contain the same book information after being imported into R.
+
+## Conclusion
+
+This assignment demonstrated how the same dataset can be represented in both HTML and JSON formats and then imported into R for comparison. The HTML file stored the data in a table, while the JSON file stored the same information in a structured object format.
+
+After loading both files into R and standardizing their structure, both identical() and all.equal() returned TRUE, confirming that the two formats produced the same final data frame. This exercise helped reinforce the structural differences between HTML and JSON while showing that both can serve as valid data sources for downstream analysis in R.
