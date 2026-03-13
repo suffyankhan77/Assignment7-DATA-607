@@ -8,7 +8,7 @@
   },
   {
     "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
-    "authors": "Aurélien Géron",
+    "authors": "Aurelien Geron",
     "publication_year": 2022,
     "publisher": "O'Reilly Media",
     "genre": "Machine Learning"
@@ -20,4 +20,5 @@
     "publisher": "O'Reilly Media",
     "genre": "Data Analysis"
   }
+
 ]
